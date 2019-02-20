@@ -32,7 +32,7 @@ def main(fileName, sizeOfTheCell, outName):
         # Add all paths 
         for pathNum, path in enumerate(layer.iter('{'+svg_namespaces['svg']+'}path')):
             newcell = core.Cell('L{}-p{}'.format(layerNum, pathNum))
-            pathToCell(newcell, path)
+            pathToCell(newcell, path, layerNum)
             pathcells.append(newcell)
         print('Layer {} done.'.format(layerNum))
 
@@ -44,21 +44,52 @@ def main(fileName, sizeOfTheCell, outName):
     layout.add(top)
     layout.save(outName)
 
-def pathToCell(cell, path):
-    curved_segments = ['c','s','q','t','a']
-    curved_segments += [c.upper() for c in curved_segments]
+def pathToCell(cell, path, layerNum):
 
     print('Adding path to cell')
-    print(path.attrib['id'])
+    pathid = path.attrib['id']
+    print(pathid)
     directions = path.attrib['d'].split()
     
+    curved_segments = ['c','s','q','t','a']
+    curved_segments += [c.upper() for c in curved_segments]
     if any(x in directions for x in curved_segments):
-        print('ERROR: Curved lines in path not supported. Skipping.')
+        print('ERROR: Curved lines in path {} not supported. Skipping.'.format(pathid))
         return
-    for d in directions:
-        print(d)
-        # TODO: implement creation of boundary
+    if 'm' in directions[1:] or 'M' in directions[1:]:
+        print('ERROR: Discontinuous paths in path {} not supported. Skipping.'.format(pathid))
+        return
 
+    x, y = map(float, directions[1].split(','))
+    points = [(x,y)]
+    print(x,y)
+    vertmove, horizmove = False, False
+    for d in directions[2:]:
+        print(d)
+        if d is 'l':
+            vertmove, horizmove = False, False
+            continue
+        elif d is 'v': 
+            vertmove, horizmove = True, False
+        elif d is 'h':
+            vertmove, horizmove = False, True
+        elif d is 'z':
+            break
+        else:
+            if not vertmove and not horizmove: 
+                dx, dy = map(float, d.split(','))
+                x, y = x+dx, y+dy
+            elif vertmove: 
+                dy = float(d)
+                y = y+dy
+            else:
+                dx = float(d)
+                x = x+dx
+            points.append((x,y))
+            print('x:',x,'y:',y)
+
+    boundary = core.Boundary(points, layer=layerNum)
+    cell.add(boundary)
 
 if __name__ == "__main__":
     args = sys.argv
