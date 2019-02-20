@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Convert an SVG file to a GDS file
+"""Convert an SVG file to a GDSII file
 """
 
 import sys
@@ -10,9 +10,9 @@ import xml.etree.ElementTree as ET
 global height
 
 def main(fileName, sizeOfTheCell, outName):
-    """Convert an SVG file (fileName) to a GDS file
+    """Convert an SVG file (fileName) to a GDSII file
     """
-    print("Convert an SVG file to a GDS file.")
+    print("Convert an SVG file to a GDSII file.")
     # Read an SVG file
     svgxml_tree = ET.parse(fileName)
     root = svgxml_tree.getroot()
