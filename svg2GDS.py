@@ -66,29 +66,31 @@ def pathToCell(cell, path, layerNum):
     # Hardcoded conversion of straight lines, can be more sophisticated.
     x, y = map(float, directions[1].split(','))
     points = [(x,y)]
-    vertmove, horizmove = False, False
+    vertmove, horizmove, absmove = False, False, False
     for d in directions[2:]:
+        if d.isupper():
+            absmove = True
+        elif d.islower():
+            absmove = False
         if d.lower() == 'l':
             vertmove, horizmove = False, False
             continue
         elif d.lower() == 'v': 
             vertmove, horizmove = True, False
-            # TODO: Add routine for absolute position 'V'
         elif d.lower() == 'h':
             vertmove, horizmove = False, True
-            # TODO: Add routine for absolute position 'H'
         elif d.lower() == 'z':
             break
         else:
             if not vertmove and not horizmove: 
                 dx, dy = map(float, d.split(','))
-                x, y = x+dx, y+dy
+                x, y = (not absmove)*x+dx, (not absmove)*y+dy
             elif vertmove: 
                 dy = float(d)
-                y = y+dy
+                y = (not absmove)*y+dy
             else:
                 dx = float(d)
-                x = x+dx
+                x = (not absmove)*x+dx
             points.append((x,y))
             #print('x:',x,'y:',y)
 
