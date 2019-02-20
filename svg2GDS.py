@@ -21,9 +21,6 @@ def main(fileName, sizeOfTheCell, outName):
     width = float(root.attrib['width'][:-2])
     height = float(root.attrib['height'][:-2])
 
-    print("width:{0}".format(width))
-    print("height:{0}".format(height))
-
     # Fetch namespaces (xmlns:)
     svg_namespaces = dict([node for _, node in ET.iterparse(fileName, events=['start-ns'])])
 
@@ -38,6 +35,8 @@ def main(fileName, sizeOfTheCell, outName):
             pathToCell(newcell, path, layerNum)
             pathcells.append(newcell)
         print('Layer {} done.'.format(layerNum))
+
+    # TODO: Implement routines for Circle/Disk, Ellipse, Box/Rectangle 
 
     top = core.Cell("TOP")
     top.add(pathcells)
@@ -54,6 +53,7 @@ def pathToCell(cell, path, layerNum):
     print(pathid)
     directions = path.attrib['d'].split()
     
+    # Small sanity check. Currently, only straight, continuous lines are supported.
     curved_segments = ['c','s','q','t','a']
     curved_segments += [c.upper() for c in curved_segments]
     if any(x in directions for x in curved_segments):
@@ -63,12 +63,12 @@ def pathToCell(cell, path, layerNum):
         print('ERROR: Discontinuous paths in path {} not supported. Skipping.'.format(pathid))
         return
 
+    # Hardcoded conversion of straight lines, can be more sophisticated.
     x, y = map(float, directions[1].split(','))
     points = [(x,y)]
-    print(x,y)
     vertmove, horizmove = False, False
     for d in directions[2:]:
-        print(d)
+        #print(d)
         if d is 'l':
             vertmove, horizmove = False, False
             continue
@@ -89,8 +89,9 @@ def pathToCell(cell, path, layerNum):
                 dx = float(d)
                 x = x+dx
             points.append((x,y))
-            print('x:',x,'y:',y)
+            #print('x:',x,'y:',y)
 
+    # Flip ys in order to adhere to Inkscape coordinate system
     global height
     points_flip_y = [(x,height-y) for (x,y) in points]
     boundary = core.Boundary(points_flip_y, layer=layerNum)
