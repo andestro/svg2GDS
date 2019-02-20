@@ -7,6 +7,8 @@ import sys
 from gdsCAD import *
 import xml.etree.ElementTree as ET
 
+global height
+
 def main(fileName, sizeOfTheCell, outName):
     """Convert an SVG file (fileName) to a GDS file
     """
@@ -15,8 +17,9 @@ def main(fileName, sizeOfTheCell, outName):
     svgxml_tree = ET.parse(fileName)
     root = svgxml_tree.getroot()
 
-    width = root.attrib['width']
-    height = root.attrib['height']
+    global height
+    width = float(root.attrib['width'][:-2])
+    height = float(root.attrib['height'][:-2])
 
     print("width:{0}".format(width))
     print("height:{0}".format(height))
@@ -88,7 +91,9 @@ def pathToCell(cell, path, layerNum):
             points.append((x,y))
             print('x:',x,'y:',y)
 
-    boundary = core.Boundary(points, layer=layerNum)
+    global height
+    points_flip_y = [(x,height-y) for (x,y) in points]
+    boundary = core.Boundary(points_flip_y, layer=layerNum)
     cell.add(boundary)
 
 if __name__ == "__main__":
