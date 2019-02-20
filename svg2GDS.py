@@ -77,22 +77,24 @@ def pathToCell(cell, path, layerNum):
             continue
         elif d.lower() == 'v': 
             vertmove, horizmove = True, False
+            continue
         elif d.lower() == 'h':
             vertmove, horizmove = False, True
+            continue
         elif d.lower() == 'z':
             break
+            
+        if not vertmove and not horizmove: 
+            dx, dy = map(float, d.split(','))
+            x, y = (not absmove)*x+dx, (not absmove)*y+dy
+        elif vertmove: 
+            dy = float(d)
+            y = (not absmove)*y+dy
         else:
-            if not vertmove and not horizmove: 
-                dx, dy = map(float, d.split(','))
-                x, y = (not absmove)*x+dx, (not absmove)*y+dy
-            elif vertmove: 
-                dy = float(d)
-                y = (not absmove)*y+dy
-            else:
-                dx = float(d)
-                x = (not absmove)*x+dx
-            points.append((x,y))
-            #print('x:',x,'y:',y)
+            dx = float(d)
+            x = (not absmove)*x+dx
+        points.append((x,y))
+        #print('x:',x,'y:',y)
 
     # Flip ys in order to adhere to Inkscape coordinate system
     global height
