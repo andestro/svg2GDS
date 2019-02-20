@@ -83,7 +83,7 @@ def pathToCell(cell, path, layerNum):
             continue
         elif d.lower() == 'z':
             break
-            
+
         if not vertmove and not horizmove: 
             dx, dy = map(float, d.split(','))
             x, y = (not absmove)*x+dx, (not absmove)*y+dy
@@ -101,6 +101,22 @@ def pathToCell(cell, path, layerNum):
     points_flip_y = [(x,height-y) for (x,y) in points]
     boundary = core.Boundary(points_flip_y, layer=layerNum)
     cell.add(boundary)
+
+def circleToCell(cell, circle, layerNum):
+    # Technically a filled circle is a disk in GDSII
+    print('Adding circle to cell')
+    circleid = circle.attrib['id']
+    print(circleid)
+    cx = circle.attrib['cx']
+    cy = circle.attrib['cy']
+    r = circle.attrib['r']
+
+    # Flip y in order to adhere to Inkscape coordinate system
+    global height
+    cy_flip = height-cy
+
+    disk = core.Disk((cx,cy_flip), r, layer=layerNum)
+    cell.add(disk)
 
 if __name__ == "__main__":
     args = sys.argv
