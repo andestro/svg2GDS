@@ -68,15 +68,16 @@ def pathToCell(cell, path, layerNum):
     points = [(x,y)]
     vertmove, horizmove = False, False
     for d in directions[2:]:
-        #print(d)
-        if d is 'l':
+        if d.lower() == 'l':
             vertmove, horizmove = False, False
             continue
-        elif d is 'v': 
+        elif d.lower() == 'v': 
             vertmove, horizmove = True, False
-        elif d is 'h':
+            # TODO: Add routine for absolute position 'V'
+        elif d.lower() == 'h':
             vertmove, horizmove = False, True
-        elif d is 'z':
+            # TODO: Add routine for absolute position 'H'
+        elif d.lower() == 'z':
             break
         else:
             if not vertmove and not horizmove: 
