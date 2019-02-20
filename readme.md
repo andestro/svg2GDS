@@ -1,6 +1,6 @@
 # svg2GDS
 
-Convert an SVG file to a GDS file.
+Convert an SVG file to a GDSII file.
 
 **Current status:** Only rudimentary implementation. SVG path objects are converted to GDSII boundaries. 
 
