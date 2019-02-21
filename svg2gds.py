@@ -34,6 +34,11 @@ def main(fileName, sizeOfTheCell, outName):
             newcell = core.Cell('L{}-p{}'.format(layerNum, pathNum))
             pathToCell(newcell, path, layerNum)
             pathcells.append(newcell)
+        # Add all circles (as disks)
+        for circNum, circle in enumerate(layer.iter('{'+svg_namespaces['svg']+'}circle')):
+            newcell = core.Cell('L{}-disk{}'.format(layerNum, circNum))
+            circleToCell(newcell, circle, layerNum)
+            pathcells.append(newcell)
         print('Layer {} done.'.format(layerNum))
 
     # TODO: Implement routines for Circle/Disk, Ellipse, Box/Rectangle 
@@ -107,15 +112,15 @@ def circleToCell(cell, circle, layerNum):
     print('Adding circle to cell')
     circleid = circle.attrib['id']
     print(circleid)
-    cx = circle.attrib['cx']
-    cy = circle.attrib['cy']
-    r = circle.attrib['r']
+    cx = float(circle.attrib['cx'])
+    cy = float(circle.attrib['cy'])
+    r = float(circle.attrib['r'])
 
     # Flip y in order to adhere to Inkscape coordinate system
     global height
     cy_flip = height-cy
 
-    disk = core.Disk((cx,cy_flip), r, layer=layerNum)
+    disk = shapes.Disk((cx,cy_flip), r, layer=layerNum)
     cell.add(disk)
 
 if __name__ == "__main__":
